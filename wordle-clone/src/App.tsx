@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import TileBoard from './components/TileBoard'
 
 function App() {
   return (
-    <div className='mx-auto w-96'>
-      <h1 className='text-4xl text-center'>Wordle!</h1>
+    <div className='flex justify-center w-screen '>
+      <TileBoard />
     </div>
   )
 }
