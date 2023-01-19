@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import TileBoard from './components/TileBoard'
 
 function App() {

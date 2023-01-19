@@ -1,13 +1,22 @@
 import Tile from './Tile'
+import { LetterState } from '../utils/word-utils'
 
-export default function TileRow() {
+interface TileRowProps {
+  word: string
+  stateArray: LetterState[]
+}
+
+export default function TileRow({ word, stateArray }: TileRowProps) {
+  const splitWord = word.split('')
+
+  const tileContent = Array(5).fill('')
+  for (const [index, letter] of splitWord.entries()) tileContent[index] = letter
+
   return (
     <div className='flex flex-row gap-1'>
-      <Tile />
-      <Tile />
-      <Tile />
-      <Tile />
-      <Tile />
+      {tileContent.map((letter, index) => (
+        <Tile letter={letter} key={index} state={stateArray[index]} />
+      ))}
     </div>
   )
 }
