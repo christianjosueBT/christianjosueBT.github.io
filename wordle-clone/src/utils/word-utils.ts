@@ -1,6 +1,8 @@
 import wordBank from '../word-bank.json'
 
-const words = new Map(wordBank.map(word => [word, word]))
+const words = new Map(
+  wordBank.valid.concat(wordBank.invalid).map(word => [word, word])
+)
 
 enum LetterState {
   Empty = 1,
@@ -10,12 +12,13 @@ enum LetterState {
 }
 
 function getRandomWord() {
-  const randomIndex = Math.floor(Math.random() * wordBank.length)
-  return wordBank[randomIndex]
+  return wordBank.valid[Math.floor(Math.random() * wordBank.valid.length)]
 }
 
 const computeStateArray = (guess: string, answer: string): LetterState[] => {
   if (guess.length !== 5 || answer.length !== 5) return []
+
+  console.log(answer)
 
   const stateArray: LetterState[] = Array(5)
   const answerLetterCount = {}
