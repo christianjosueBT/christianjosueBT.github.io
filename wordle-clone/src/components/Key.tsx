@@ -1,9 +1,9 @@
 export default function Key({ children }) {
   return (
     <div
-      className='w-fit px-2 min-w-[2em] h-14 bg-neutral-400 rounded
+      className='w-fit px-2 min-w-[2.5em] h-14 bg-neutral-500 rounded
       flex justify-center items-center 
-      font-sans font-bold'
+      font-mono font-bold'
     >
       {children}
     </div>
