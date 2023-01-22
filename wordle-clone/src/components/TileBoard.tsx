@@ -7,7 +7,8 @@ import {
   computeStateArray,
 } from '../utils/word-utils'
 
-export default function TileBoard() {
+export default function TileBoard({ handleWordSubmit }) {
+  // STATE
   const [wordList, setWordList] = useState(Array(6).fill(''))
   const [active, setActive] = useState(0)
   const [stateMatrix, setStateMatrix] = useState(
@@ -15,6 +16,7 @@ export default function TileBoard() {
   )
   const [answer, setAnswer] = useState(getRandomWord().toLowerCase())
 
+  // FUNCTIONS
   const addLetter = (letter: string) => {
     if (wordList[active].length >= 5) return
 
@@ -25,7 +27,6 @@ export default function TileBoard() {
 
     setWordList(updatedWordList)
   }
-
   const deleteLetter = () => {
     const updatedWordList = wordList.map((word, index) => {
       if (index === active) return word.slice(0, -1)
@@ -33,6 +34,22 @@ export default function TileBoard() {
     })
 
     setWordList(updatedWordList)
+  }
+  const handleEnter = () => {
+    if (wordList[active].length !== 5) return console.log('Not enough letters')
+    if (!words.has(wordList[active].toLowerCase()))
+      return console.log('Not in word list')
+
+    const stateArray = computeStateArray(wordList[active].toLowerCase(), answer)
+    const newStateMatrix = stateMatrix.map((arr, i) => {
+      if (i === active) return stateArray
+      else return arr
+    })
+    handleWordSubmit(wordList[active].toLowerCase(), stateArray)
+    setStateMatrix(newStateMatrix)
+    setActive(active + 1)
+
+    return
   }
 
   const handleKeydown = (event: object) => {
@@ -47,30 +64,17 @@ export default function TileBoard() {
     // if pressed key is backspace
     if (event.key === 'Backspace') return deleteLetter()
     // if pressed key is enter
-    if (event.key === 'Enter') {
-      if (wordList[active].length !== 5)
-        return console.log('Not enough letters')
-      if (!words.has(wordList[active].toLowerCase()))
-        return console.log('Not in word list')
-
-      const stateArray = computeStateArray(
-        wordList[active].toLowerCase(),
-        answer
-      )
-      const newStateMatrix = stateMatrix.map((arr, i) => {
-        if (i === active) return stateArray
-        else return arr
-      })
-      setStateMatrix(newStateMatrix)
-      setActive(active + 1)
-    } else return
+    if (event.key === 'Enter') handleEnter()
+    else return
   }
 
+  // handle keydown press
   useEffect(() => {
     document.addEventListener('keydown', handleKeydown)
     return () => document.removeEventListener('keydown', handleKeydown)
   }, [wordList, active])
 
+  // jsx
   return (
     <div className='flex flex-col gap-2 items-stretch justify-center max-w-sm'>
       {wordList.map((word, index) => {

@@ -16,5 +16,5 @@ export default function Tile({ letter, state }) {
     }
   )
 
-  return <div className={classes}>{letter}</div>
+  return <div className={classes}>{letter.toUpperCase()}</div>
 }

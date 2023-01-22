@@ -18,7 +18,7 @@ function getRandomWord() {
 const computeStateArray = (guess: string, answer: string): LetterState[] => {
   if (guess.length !== 5 || answer.length !== 5) return []
 
-  console.log(answer)
+  console.log('answer:', answer)
 
   const stateArray: LetterState[] = Array(5)
   const answerLetterCount = {}
@@ -55,8 +55,6 @@ const computeStateArray = (guess: string, answer: string): LetterState[] => {
 
     stateArray[i] = LetterState.Miss
   }
-
-  console.log('stateArray:', stateArray)
 
   return stateArray
 }
