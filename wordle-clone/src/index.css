@@ -6,6 +6,14 @@
   font-family: 'karnak-condensed';
   src: url(assets/fonts/KarnakPro-Light.ttf);
 }
+@font-face {
+  font-family: 'clear-sans-bold';
+  src: url(assets/fonts/ClearSans-Bold.ttf);
+}
+@font-face {
+  font-family: 'clear-sans';
+  src: url(assets/fonts/ClearSans-Regular.ttf);
+}
 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;

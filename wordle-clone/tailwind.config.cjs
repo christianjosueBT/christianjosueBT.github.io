@@ -5,6 +5,8 @@ module.exports = {
     extend: {
       fontFamily: {
         karnak: ['karnak-condensed', 'sans-serif'],
+        clearSans: ['clear-sans', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        boldSans: ['clear-sans-bold', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
     },
   },
