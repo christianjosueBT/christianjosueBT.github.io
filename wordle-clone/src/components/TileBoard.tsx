@@ -7,8 +7,10 @@ import {
   computeStateArray,
 } from '../utils/word-utils'
 
-export default function TileBoard({ handleWordSubmit }) {
+export default function TileBoard({ handleSubmittedWord, handleGameOver }) {
+  // ****************************************************
   // STATE
+  // ****************************************************
   const [wordList, setWordList] = useState(Array(6).fill(''))
   const [active, setActive] = useState(0)
   const [stateMatrix, setStateMatrix] = useState(
@@ -16,7 +18,9 @@ export default function TileBoard({ handleWordSubmit }) {
   )
   const [answer, setAnswer] = useState(getRandomWord().toLowerCase())
 
+  // ****************************************************
   // FUNCTIONS
+  // ****************************************************
   const addLetter = (letter: string) => {
     if (wordList[active].length >= 5) return
 
@@ -45,13 +49,14 @@ export default function TileBoard({ handleWordSubmit }) {
       if (i === active) return stateArray
       else return arr
     })
-    handleWordSubmit(wordList[active].toLowerCase(), stateArray)
+
+    if (stateArray.every(el => el === LetterState.Match)) handleGameOver()
+    handleSubmittedWord(wordList[active].toLowerCase(), stateArray)
     setStateMatrix(newStateMatrix)
     setActive(active + 1)
 
     return
   }
-
   const handleKeydown = (event: object) => {
     // if pressed key is an alphabet character
     if (
@@ -68,13 +73,15 @@ export default function TileBoard({ handleWordSubmit }) {
     else return
   }
 
-  // handle keydown press
+  // global keydown press event listener and handler
   useEffect(() => {
     document.addEventListener('keydown', handleKeydown)
     return () => document.removeEventListener('keydown', handleKeydown)
   }, [wordList, active])
 
-  // jsx
+  // ****************************************************
+  // FINAL OUTPUT
+  // ****************************************************
   return (
     <div className='flex flex-col gap-2 items-stretch justify-center max-w-sm'>
       {wordList.map((word, index) => {
