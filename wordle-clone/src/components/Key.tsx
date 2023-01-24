@@ -1,7 +1,7 @@
 import className from 'classnames'
 import { LetterState } from '../utils/word-utils'
 
-export default function Key({ children, state }) {
+export default function Key({ children, state, addLetter, handleClick }) {
   const classes = className(
     'w-fit px-2 min-w-[2.5em] h-14 bg-neutral-500 rounded flex justify-center items-center font-mono font-bold',
     {
@@ -10,8 +10,15 @@ export default function Key({ children, state }) {
       'bg-green-700': state === LetterState.Match,
     }
   )
+
+  // console.log('addLetter:', addLetter)
+  // console.log('handleClick:', handleClick)
+
   return (
-    <div className={classes}>
+    <div
+      className={classes}
+      onClick={addLetter ? () => addLetter(children) : handleClick}
+    >
       {typeof children === 'string' ? children.toUpperCase() : children}
     </div>
   )

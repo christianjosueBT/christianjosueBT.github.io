@@ -1,14 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TileBoard from './components/TileBoard'
 import KeyBoard from './components/KeyBoard'
 import Modal from './components/Modal'
+import {
+  words,
+  LetterState,
+  getRandomWord,
+  computeStateArray,
+} from './utils/word-utils'
 
 function App() {
+  console.log('rerender')
   // ************************************************************
   // SECTION FOR KEYBOARD
   // ************************************************************
   const [usedLetters, setUsedLetters] = useState(new Map())
-  // this updates usedLetters state to keep track of what letters have been used, and what is their appropriate LetterState
+  // this updates usedLetters state to keep track of what letters have been used, and what is their correct LetterState
   const handleSubmittedWord = (word, stateArray) => {
     const newMap = new Map(usedLetters)
 
@@ -22,7 +29,6 @@ function App() {
     }
     setUsedLetters(newMap)
   }
-
   // *********************************************************
   // SECTION FOR MODAL
   // *********************************************************
@@ -33,7 +39,7 @@ function App() {
   }
 
   const handleClose = () => {
-    setShowModal(false)
+    setIsGameOver(false)
   }
 
   const actionBar = (
@@ -89,6 +95,77 @@ function App() {
       </div>
     </Modal>
   )
+  // ****************************************************
+  // STATE FOR APP
+  // ****************************************************
+  const [wordList, setWordList] = useState(Array(6).fill(''))
+  const [active, setActive] = useState(0)
+  const [stateMatrix, setStateMatrix] = useState(
+    Array.from({ length: 6 }, () => Array(5).fill(LetterState.Empty))
+  )
+  const [answer, setAnswer] = useState(getRandomWord().toLowerCase())
+
+  // ****************************************************
+  // FUNCTIONS FOR APP
+  // ****************************************************
+  const addLetter = (letter: string) => {
+    if (wordList[active].length >= 5) return
+
+    const updatedWordList = wordList.map((word, index) => {
+      if (index === active) return word + letter.toUpperCase()
+      else return word
+    })
+
+    setWordList(updatedWordList)
+  }
+  const deleteLetter = () => {
+    if (wordList[active].length === 0) return
+
+    const updatedWordList = wordList.map((word, index) => {
+      if (index === active) return word.slice(0, -1)
+      else return word
+    })
+
+    setWordList(updatedWordList)
+  }
+  const handleEnter = () => {
+    if (wordList[active].length !== 5) return console.log('Not enough letters')
+    if (!words.has(wordList[active].toLowerCase()))
+      return console.log('Not in word list')
+
+    const stateArray = computeStateArray(wordList[active].toLowerCase(), answer)
+    const newStateMatrix = stateMatrix.map((arr, i) => {
+      if (i === active) return stateArray
+      else return arr
+    })
+
+    if (stateArray.every(el => el === LetterState.Match)) handleGameOver()
+    handleSubmittedWord(wordList[active].toLowerCase(), stateArray)
+    setStateMatrix(newStateMatrix)
+    setActive(active + 1)
+
+    return
+  }
+  const handleKeydown = (event: object) => {
+    // if pressed key is an alphabet character
+    if (
+      (event.keyCode >= 65 && event.keyCode <= 90) ||
+      (event.keyCode >= 97 && event.keyCode <= 122)
+    ) {
+      return addLetter(event.key)
+    }
+    // if pressed key is backspace
+    if (event.key === 'Backspace') return deleteLetter()
+    // if pressed key is enter
+    if (event.key === 'Enter') handleEnter()
+    else return
+  }
+
+  // global keydown press event listener and handler
+  useEffect(() => {
+    if (!isGameOver) document.addEventListener('keydown', handleKeydown)
+    return () => document.removeEventListener('keydown', handleKeydown)
+  }, [wordList, active])
 
   // ****************************************************
   // FINAL OUTPUT
@@ -103,13 +180,15 @@ function App() {
       <hr className='border-neutral-700' />
       <div className='h-[calc(100%-theme(spacing.16))] flex flex-col justify-evenly'>
         <div className='flex justify-center '>
-          <TileBoard
-            handleSubmittedWord={handleSubmittedWord}
-            handleGameOver={handleGameOver}
-          />
+          <TileBoard wordList={wordList} stateMatrix={stateMatrix} />
         </div>
         <div className='flex justify-center'>
-          <KeyBoard usedLetters={usedLetters} />
+          <KeyBoard
+            usedLetters={usedLetters}
+            addLetter={addLetter}
+            deleteLetter={deleteLetter}
+            handleEnter={handleEnter}
+          />
         </div>
       </div>
     </div>

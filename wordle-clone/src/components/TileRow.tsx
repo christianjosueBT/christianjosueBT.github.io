@@ -7,10 +7,12 @@ interface TileRowProps {
 }
 
 export default function TileRow({ word, stateArray }: TileRowProps) {
-  const splitWord = word.split('')
+  const tileContent = Array.from(word)
 
-  const tileContent = Array(5).fill('')
-  for (const [index, letter] of splitWord.entries()) tileContent[index] = letter
+  for (let i = 0; i < 5; i++) {
+    if (tileContent[i]) continue
+    else tileContent[i] = ''
+  }
 
   return (
     <div className='flex flex-row gap-1'>
