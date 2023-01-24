@@ -12,15 +12,6 @@ export default function KeyBoard({
 
   const renderedKeys = [[...keysString1], [...keysString2], [...keysString3]]
 
-  // renderedKeys.forEach(function (arr, index, array) {
-  //   array[index] = arr.map(letter => {
-  //     letter = letter.toLowerCase()
-
-  //     // if key is enter
-
-  //   })
-  // })
-
   for (let i = 0; i < renderedKeys.length; i++) {
     renderedKeys[i] = renderedKeys[i].map(letter => {
       letter = letter.toLowerCase()
