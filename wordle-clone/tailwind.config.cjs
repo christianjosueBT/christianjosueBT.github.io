@@ -36,9 +36,6 @@ module.exports = {
           '50%': {
             transform: 'rotateX(90deg)',
           },
-          // '55%': {
-          //   transform: 'rotateX(90deg)',
-          // },
         },
       },
     },
