@@ -11,7 +11,7 @@ module.exports = {
       animation: {
         scale: 'scale 0.1s linear',
         wiggle: 'wiggle 0.1s ease-in-out 4',
-        flip: 'flip 0.75s ease-in 1',
+        flip: 'flip 0.5s ease-in-out 1',
       },
       keyframes: {
         scale: {
