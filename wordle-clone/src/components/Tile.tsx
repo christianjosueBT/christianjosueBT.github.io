@@ -13,13 +13,15 @@ export default function Tile({ letter, state, ...rest }) {
     'flex justify-center items-center', // flex stuff
     'font-sans font-bold text-3xl', // text stuff
     {
-      'border-neutral-400 animate-scale': letter,
+      'border-neutral-400': letter,
       'border-0 bg-neutral-700': state === LetterState.Miss,
       'border-0 bg-yellow-500': state === LetterState.Present,
       'border-0 bg-green-700': state === LetterState.Match,
     },
-    rest.classNamne
+    rest.className
   )
+
+  console.log(classes)
 
   return <div className={classes}>{letter.toUpperCase()}</div>
 }

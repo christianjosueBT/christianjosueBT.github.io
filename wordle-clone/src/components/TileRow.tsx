@@ -40,9 +40,27 @@ const TileRow = forwardRef(function TileRow(props, ref) {
 
   return (
     <div className={classes} ref={ref}>
-      {tileContent.map((letter, index) => (
-        <Tile letter={letter} key={index} state={stateArray[index]} />
-      ))}
+      {tileContent.map((letter, index) => {
+        if (rowState === RowState.Valid || rowState === RowState.Correct) {
+          let tileClass = className('transition-colors duration-200', {
+            'animate-flip': rowState === RowState.Valid,
+            'animate-win': rowState === RowState.Correct,
+            'animation-delay-200 delay-300': index === 1,
+            'animation-delay-400 delay-[550ms]': index === 2,
+            'animation-delay-600 delay-[800ms]': index === 3,
+            'animation-delay-800 delay-[1050ms]': index === 4,
+          })
+          return (
+            <Tile
+              className={tileClass}
+              letter={letter}
+              key={index}
+              state={stateArray[index]}
+            />
+          )
+        } else
+          return <Tile letter={letter} key={index} state={stateArray[index]} />
+      })}
     </div>
   )
 })

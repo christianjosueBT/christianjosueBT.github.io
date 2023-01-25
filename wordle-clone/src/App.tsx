@@ -32,12 +32,6 @@ function App() {
   // *********************************************************
   // SECTION FOR MODAL
   // *********************************************************
-  const [isGameOver, setIsGameOver] = useState(false)
-
-  const handleGameOver = () => {
-    setIsGameOver(true)
-  }
-
   const handleClose = () => {
     setIsGameOver(false)
   }
@@ -105,11 +99,17 @@ function App() {
     Array.from({ length: 6 }, () => Array(5).fill(LetterState.Empty))
   )
   const [answer, setAnswer] = useState(getRandomWord().toLowerCase())
+  const [isGameOver, setIsGameOver] = useState(false)
+
   const boardRef = useRef()
 
   // ****************************************************
   // FUNCTIONS FOR APP
   // ****************************************************
+  const handleGameOver = () => {
+    setIsGameOver(true)
+    setRowState(RowState.Correct)
+  }
   const addLetter = (letter: string) => {
     if (wordList[active].length >= 5) return
 
@@ -133,42 +133,46 @@ function App() {
     setRowState(RowState.None)
   }
   const handleEnter = () => {
+    // not enough letters
     if (wordList[active].length !== 5) {
       setRowState(state => RowState.Invalid)
-      // if (boardRef && 'current' in boardRef) {
-      //   if (boardRef.current) {
-      //     let s = boardRef.current
-      //     s.style.animation = 'none'
-      //     // I had to do "let x =" here because my create-react-app config was yelling at me
-      //     let x = s.offsetHeight // trigger reflow
-      //     s.style.animation = null
-      //   }
-      // }
+      if (boardRef && 'current' in boardRef) {
+        if (boardRef.current) {
+          let s = boardRef.current
+          s.style.animation = 'none'
+          // I had to do "let x =" here because my create-react-app config was yelling at me
+          let x = s.offsetHeight // trigger reflow
+          s.style.animation = null
+        }
+      }
       return console.log('Not enough letters')
     }
+    // invalid word
     if (!words.has(wordList[active].toLowerCase())) {
       setRowState(state => RowState.Invalid)
-      // if (boardRef && 'current' in boardRef) {
-      //   if (boardRef.current) {
-      //     let s = boardRef.current
-      //     s.style.animation = 'none'
-      //     // I had to do "let x =" here because my create-react-app config was yelling at me
-      //     let x = s.offsetHeight // trigger reflow
-      //     s.style.animation = null
-      //   }
-      // }
+      if (boardRef && 'current' in boardRef) {
+        if (boardRef.current) {
+          let s = boardRef.current
+          s.style.animation = 'none'
+          // I had to do "let x =" here because my create-react-app config was yelling at me
+          let x = s.offsetHeight // trigger reflow
+          s.style.animation = null
+        }
+      }
       return console.log('Not in word list')
     }
+    // valid guess, compute state array for current row
     const stateArray = computeStateArray(wordList[active].toLowerCase(), answer)
     const newStateMatrix = stateMatrix.map((arr, i) => {
       if (i === active) return stateArray
       else return arr
     })
-
+    // check for game over, handle word submit, set state matrix, set active row, set row state (for animation purposes)
     if (stateArray.every(el => el === LetterState.Match)) handleGameOver()
     handleSubmittedWord(wordList[active].toLowerCase(), stateArray)
     setStateMatrix(newStateMatrix)
     setActive(active + 1)
+    setRowState(RowState.Valid)
 
     return
   }
@@ -196,7 +200,6 @@ function App() {
   // ****************************************************
   // FINAL OUTPUT
   // ****************************************************
-
   return (
     <div className='h-[calc(100%-13rem)]'>
       {isGameOver && modal}

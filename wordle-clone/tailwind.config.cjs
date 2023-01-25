@@ -10,7 +10,8 @@ module.exports = {
       },
       animation: {
         scale: 'scale 0.1s linear',
-        wiggle: 'wiggle 0.2s ease-in-out 3',
+        wiggle: 'wiggle 0.1s ease-in-out 4',
+        flip: 'flip 0.75s ease-in 1',
       },
       keyframes: {
         scale: {
@@ -22,14 +23,25 @@ module.exports = {
             transform: 'translateX(0)',
           },
           '33%': {
-            transform: 'translateX(-2.5%)',
+            transform: 'translateX(-1%)',
           },
           '66%': {
-            transform: 'translateX(2.5%)',
+            transform: 'translateX(1%)',
           },
+        },
+        flip: {
+          '0%, 100%': {
+            transform: 'rotateX(0)',
+          },
+          '50%': {
+            transform: 'rotateX(90deg)',
+          },
+          // '55%': {
+          //   transform: 'rotateX(90deg)',
+          // },
         },
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animation-delay')],
 }
