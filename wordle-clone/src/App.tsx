@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TileBoard from './components/TileBoard'
+import { RowState } from './components/TileRow'
 import KeyBoard from './components/KeyBoard'
 import Modal from './components/Modal'
 import {
@@ -10,7 +11,6 @@ import {
 } from './utils/word-utils'
 
 function App() {
-  console.log('rerender')
   // ************************************************************
   // SECTION FOR KEYBOARD
   // ************************************************************
@@ -100,10 +100,12 @@ function App() {
   // ****************************************************
   const [wordList, setWordList] = useState(Array(6).fill(''))
   const [active, setActive] = useState(0)
+  const [rowState, setRowState] = useState(RowState.None)
   const [stateMatrix, setStateMatrix] = useState(
     Array.from({ length: 6 }, () => Array(5).fill(LetterState.Empty))
   )
   const [answer, setAnswer] = useState(getRandomWord().toLowerCase())
+  const boardRef = useRef()
 
   // ****************************************************
   // FUNCTIONS FOR APP
@@ -117,6 +119,7 @@ function App() {
     })
 
     setWordList(updatedWordList)
+    setRowState(RowState.None)
   }
   const deleteLetter = () => {
     if (wordList[active].length === 0) return
@@ -127,12 +130,35 @@ function App() {
     })
 
     setWordList(updatedWordList)
+    setRowState(RowState.None)
   }
   const handleEnter = () => {
-    if (wordList[active].length !== 5) return console.log('Not enough letters')
-    if (!words.has(wordList[active].toLowerCase()))
+    if (wordList[active].length !== 5) {
+      setRowState(state => RowState.Invalid)
+      // if (boardRef && 'current' in boardRef) {
+      //   if (boardRef.current) {
+      //     let s = boardRef.current
+      //     s.style.animation = 'none'
+      //     // I had to do "let x =" here because my create-react-app config was yelling at me
+      //     let x = s.offsetHeight // trigger reflow
+      //     s.style.animation = null
+      //   }
+      // }
+      return console.log('Not enough letters')
+    }
+    if (!words.has(wordList[active].toLowerCase())) {
+      setRowState(state => RowState.Invalid)
+      // if (boardRef && 'current' in boardRef) {
+      //   if (boardRef.current) {
+      //     let s = boardRef.current
+      //     s.style.animation = 'none'
+      //     // I had to do "let x =" here because my create-react-app config was yelling at me
+      //     let x = s.offsetHeight // trigger reflow
+      //     s.style.animation = null
+      //   }
+      // }
       return console.log('Not in word list')
-
+    }
     const stateArray = computeStateArray(wordList[active].toLowerCase(), answer)
     const newStateMatrix = stateMatrix.map((arr, i) => {
       if (i === active) return stateArray
@@ -180,7 +206,13 @@ function App() {
       <hr className='border-neutral-700' />
       <div className='h-[calc(100%-theme(spacing.16))] flex flex-col justify-evenly'>
         <div className='flex justify-center '>
-          <TileBoard wordList={wordList} stateMatrix={stateMatrix} />
+          <TileBoard
+            ref={boardRef}
+            wordList={wordList}
+            stateMatrix={stateMatrix}
+            active={active}
+            rowState={rowState}
+          />
         </div>
         <div className='flex justify-center'>
           <KeyBoard

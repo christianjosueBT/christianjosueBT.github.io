@@ -1,20 +1,35 @@
-import TileRow from './TileRow'
+import { forwardRef } from 'react'
+import TileRow, { RowState } from './TileRow'
 
-export default function TileBoard({ wordList, stateMatrix }) {
+const TileBoard = forwardRef(function TileBoard(props, ref) {
+  const { wordList, stateMatrix, active, rowState } = props
   // ****************************************************
   // FINAL OUTPUT
   // ****************************************************
   return (
     <div className='flex flex-col gap-2 items-stretch justify-center max-w-sm'>
       {wordList.map((word, index) => {
-        return (
-          <TileRow
-            word={word}
-            key={index}
-            stateArray={stateMatrix[index]}
-          ></TileRow>
-        )
+        if (rowState !== RowState.None && index === active)
+          return (
+            <TileRow
+              ref={ref}
+              key={index}
+              word={word}
+              stateArray={stateMatrix[index]}
+              rowState={rowState}
+            ></TileRow>
+          )
+        else
+          return (
+            <TileRow
+              key={index}
+              word={word}
+              stateArray={stateMatrix[index]}
+            ></TileRow>
+          )
       })}
     </div>
   )
-}
+})
+
+export default TileBoard
