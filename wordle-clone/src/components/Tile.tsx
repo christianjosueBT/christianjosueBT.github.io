@@ -7,7 +7,7 @@ interface TileProps {
   className: string
 }
 
-export default function Tile({ letter, state, ...rest }) {
+export default function Tile({ letter, state, onAnimationEnd, ...rest }) {
   const classes = className(
     'w-16 h-16 border-solid border-2 border-neutral-700', // look and sizing
     'flex justify-center items-center', // flex stuff
@@ -21,7 +21,9 @@ export default function Tile({ letter, state, ...rest }) {
     rest.className
   )
 
-  console.log(classes)
-
-  return <div className={classes}>{letter.toUpperCase()}</div>
+  return (
+    <div className={classes} onAnimationEnd={onAnimationEnd}>
+      {letter.toUpperCase()}
+    </div>
+  )
 }

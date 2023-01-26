@@ -12,6 +12,7 @@ module.exports = {
         scale: 'scale 0.1s linear',
         wiggle: 'wiggle 0.1s ease-in-out 4',
         flip: 'flip 0.5s ease-in-out 1',
+        bounce: 'bounce 0.4s ease-in-out 1.5',
       },
       keyframes: {
         scale: {
@@ -35,6 +36,17 @@ module.exports = {
           },
           '50%': {
             transform: 'rotateX(90deg)',
+          },
+        },
+        bounce: {
+          '10%, 40%, 70%': {
+            transform: 'translsateY(0)',
+          },
+          '30%': {
+            transform: 'translsateY(-30px)',
+          },
+          '60%': {
+            transform: 'translsateY(-15px)',
           },
         },
       },

@@ -17,16 +17,7 @@ enum RowState {
 }
 
 const TileRow = forwardRef(function TileRow(props, ref) {
-  // const rowDiv = useRef()
-  // if (rowState === RowState.Invalid) {
-  //   let r = rowDiv.current
-  //   console.log('r:', r)
-  //   r.style.animation = 'none'
-
-  //   let x = r.offsetHeight
-  //   r.style.animation = null
-  // }
-  const { word, stateArray, rowState }: TileRowProps = props
+  const { word, stateArray, rowState, onAnimationEnd }: TileRowProps = props
 
   const tileContent = Array.from(word)
   for (let i = 0; i < 5; i++) {
@@ -42,22 +33,45 @@ const TileRow = forwardRef(function TileRow(props, ref) {
     <div className={classes} ref={ref}>
       {tileContent.map((letter, index) => {
         if (rowState === RowState.Valid || rowState === RowState.Correct) {
-          let tileClass = className('transition-all duration-[0ms]', {
+          let tileClass = className('duration-[0ms]', {
             'animate-flip delay-[225ms]': rowState === RowState.Valid,
-            'animate-win delay-[325ms]': rowState === RowState.Correct,
-            'animation-delay-200 delay-[500ms]': index === 1,
-            'animation-delay-400 delay-[700ms]': index === 2,
-            'animation-delay-600 delay-[900ms]': index === 3,
-            'animation-delay-800 delay-[1100ms]': index === 4,
+            'animation-delay-200 delay-[500ms]':
+              rowState === RowState.Valid && index === 1,
+            'animation-delay-400 delay-[700ms]':
+              rowState === RowState.Valid && index === 2,
+            'animation-delay-600 delay-[900ms]':
+              rowState === RowState.Valid && index === 3,
+            'animation-delay-800 delay-[1100ms]':
+              rowState === RowState.Valid && index === 4,
+            'animate-bounce animation-delay-100': rowState === RowState.Correct,
+            'animate-bounce animation-delay-200':
+              rowState === RowState.Correct && index === 1,
+            'animate-bounce animation-delay-300':
+              rowState === RowState.Correct && index === 2,
+            'animate-bounce animation-delay-400':
+              rowState === RowState.Correct && index === 3,
+            'animate-bounce animation-delay-500':
+              rowState === RowState.Correct && index === 4,
           })
-          return (
-            <Tile
-              className={tileClass}
-              letter={letter}
-              key={index}
-              state={stateArray[index]}
-            />
-          )
+          if (index === 4)
+            return (
+              <Tile
+                className={tileClass}
+                letter={letter}
+                key={index}
+                state={stateArray[index]}
+                onAnimationEnd={onAnimationEnd}
+              />
+            )
+          else
+            return (
+              <Tile
+                className={tileClass}
+                letter={letter}
+                key={index}
+                state={stateArray[index]}
+              />
+            )
         } else
           return <Tile letter={letter} key={index} state={stateArray[index]} />
       })}

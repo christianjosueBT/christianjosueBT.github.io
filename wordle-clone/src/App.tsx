@@ -106,9 +106,11 @@ function App() {
   // ****************************************************
   // FUNCTIONS FOR APP
   // ****************************************************
-  const handleGameOver = () => {
-    setIsGameOver(true)
-    setRowState(RowState.Correct)
+  const handleAnimationEnd = event => {
+    if (stateMatrix[active - 1].every(el => el === LetterState.Match)) {
+      setRowState(RowState.Correct)
+    }
+    if (rowState === RowState.Correct) setIsGameOver(true)
   }
   const addLetter = (letter: string) => {
     if (wordList[active].length >= 5) return
@@ -168,11 +170,10 @@ function App() {
       else return arr
     })
     // check for game over, handle word submit, set state matrix, set active row, set row state (for animation purposes)
-    if (stateArray.every(el => el === LetterState.Match)) handleGameOver()
     handleSubmittedWord(wordList[active].toLowerCase(), stateArray)
     setStateMatrix(newStateMatrix)
-    setActive(active + 1)
     setRowState(RowState.Valid)
+    setActive(active + 1)
 
     return
   }
@@ -215,6 +216,7 @@ function App() {
             stateMatrix={stateMatrix}
             active={active}
             rowState={rowState}
+            onAnimationEnd={handleAnimationEnd}
           />
         </div>
         <div className='flex justify-center'>

@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import TileRow, { RowState } from './TileRow'
 
 const TileBoard = forwardRef(function TileBoard(props, ref) {
-  const { wordList, stateMatrix, active, rowState } = props
+  const { wordList, stateMatrix, active, rowState, onAnimationEnd } = props
   // ****************************************************
   // FINAL OUTPUT
   // ****************************************************
@@ -19,9 +19,10 @@ const TileBoard = forwardRef(function TileBoard(props, ref) {
               rowState={rowState}
             ></TileRow>
           )
-        else if (rowState === RowState.Valid && index === active - 1) {
-          // console.log('rowState:', rowState)
-          // console.log('active:', active)
+        else if (
+          (rowState === RowState.Valid || rowState === RowState.Correct) &&
+          index === active - 1
+        ) {
           return (
             <TileRow
               ref={ref}
@@ -29,6 +30,7 @@ const TileBoard = forwardRef(function TileBoard(props, ref) {
               word={word}
               stateArray={stateMatrix[index]}
               rowState={rowState}
+              onAnimationEnd={onAnimationEnd}
             ></TileRow>
           )
         } else
