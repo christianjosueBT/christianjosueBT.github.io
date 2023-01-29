@@ -13,7 +13,7 @@ function NotificationProvider(props) {
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'ADD_NOTIFICATION':
-        return [...state, { ...action.payload }]
+        return [{ ...action.payload }, ...state]
       case 'REMOVE_NOTIFICATION':
         return state.filter(el => el.id !== action.id)
       default:

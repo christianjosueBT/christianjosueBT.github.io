@@ -18,7 +18,7 @@ function Notification({ dispatch, id, children }) {
         type: 'REMOVE_NOTIFICATION',
         id,
       })
-    }, 2300)
+    }, 2200)
   }, [])
 
   return (
