@@ -1,9 +1,15 @@
-import React, { useReducer, forwardRef, useImperativeHandle } from 'react'
-import ReactDOM from 'react-dom'
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useImperativeHandle,
+} from 'react'
 import { v4 } from 'uuid'
 import Notification from './Notification'
 
-const NotificationParent = forwardRef(function NotificationParent(props, ref) {
+const NotificationContext = createContext()
+
+function NotificationProvider(props) {
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'ADD_NOTIFICATION':
@@ -15,34 +21,35 @@ const NotificationParent = forwardRef(function NotificationParent(props, ref) {
     }
   }, [])
 
-  useImperativeHandle(ref, () => ({
-    dispatch(props) {
-      dispatch({
-        type: 'ADD_NOTIFICATION',
-        payload: {
-          id: v4(),
-          ...props,
-        },
-      })
-    },
-    alert() {
-      alert('CALLED COMPONENT FUNCTION FROM THE OUTSIDE?!?!?!')
-    },
-  }))
-
-  return ReactDOM.createPortal(
-    <div className='flex flex-col items-center gap-2 justify-start w-full fixed top-14'>
-      {state.map(note => {
-        return (
-          <Notification dispatch={dispatch} key={note.id} id={note.id}>
-            {note.message}
-          </Notification>
-        )
-      })}
-    </div>,
-    document.querySelector('.modal-container')
+  return (
+    <NotificationContext.Provider value={dispatch}>
+      <div className='flex flex-col items-center gap-2 justify-start w-full fixed top-14 z-10'>
+        {state.map(note => {
+          return (
+            <Notification dispatch={dispatch} key={note.id} id={note.id}>
+              {note.message}
+            </Notification>
+          )
+        })}
+      </div>
+      {props.children}
+    </NotificationContext.Provider>
   )
-})
+}
+
+export const useNotification = () => {
+  const dispatch = useContext(NotificationContext)
+
+  return props => {
+    dispatch({
+      type: 'ADD_NOTIFICATION',
+      payload: {
+        id: v4(),
+        ...props,
+      },
+    })
+  }
+}
 
 // props => {
 //   dispatch({
@@ -54,4 +61,14 @@ const NotificationParent = forwardRef(function NotificationParent(props, ref) {
 //   })
 // }
 
-export default NotificationParent
+// dispatch(props) {
+//   dispatch({
+//     type: 'ADD_NOTIFICATION',
+//     payload: {
+//       id: v4(),
+//       ...props,
+//     },
+//   })
+// }
+
+export default NotificationProvider

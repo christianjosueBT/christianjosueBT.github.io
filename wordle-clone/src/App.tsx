@@ -3,7 +3,7 @@ import TileBoard from './components/TileBoard'
 import { RowState } from './components/TileRow'
 import KeyBoard from './components/KeyBoard'
 import Modal from './components/Modal'
-import NotificationParent from './components/NotificationParent'
+import { useNotification } from './components/NotificationParent'
 import {
   words,
   LetterState,
@@ -104,18 +104,11 @@ function App() {
   const [isGameOver, setIsGameOver] = useState(false)
 
   const boardRef = useRef()
-  const notificationRef = useRef()
 
   // ****************************************************
   // FUNCTIONS FOR APP
   // ****************************************************
-  const dispatch = props => {
-    if (notificationRef && 'current' in notificationRef) {
-      if (notificationRef.current) {
-        notificationRef.current.dispatch(props)
-      }
-    }
-  }
+  const dispatch = useNotification()
   // when animation ends, check if guess was correct and set game state accordingly
   const handleAnimationEnd = event => {
     if (stateMatrix[active - 1].every(el => el === LetterState.Match)) {
@@ -187,8 +180,6 @@ function App() {
     return
   }
   const handleKeydown = (event: object) => {
-    console.log('function inside component', dispatch)
-
     // if pressed key is an alphabet character
     if (
       (event.keyCode >= 65 && event.keyCode <= 90) ||
@@ -215,7 +206,6 @@ function App() {
   return (
     <div className='h-[calc(100%-13rem)]'>
       {/* {isGameOver && modal} */}
-      <NotificationParent ref={notificationRef} />
       <header className='flex flex-col justify-center items-center h-16'>
         <h3 className='font-karnak font-bold tracking-wide text-4xl'>Wordle</h3>
       </header>
