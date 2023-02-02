@@ -4,6 +4,7 @@ import { RowState } from './components/TileRow'
 import KeyBoard from './components/KeyBoard'
 import Modal from './components/Modal'
 import { useNotification } from './components/NotificationParent'
+import graph from './assets/images/graph.png'
 import {
   words,
   LetterState,
@@ -16,8 +17,8 @@ function App() {
   // SECTION FOR KEYBOARD
   // ************************************************************
   const [usedLetters, setUsedLetters] = useState(new Map())
-  // this updates usedLetters state to keep track of what letters have been used, and what is their correct LetterState
-  const handleSubmittedWord = (word, stateArray) => {
+  // updates usedLetters state to keep track of what letters have been used, and what is their correct LetterState
+  const updateUsedLetters = (word, stateArray) => {
     const newMap = new Map(usedLetters)
 
     for (let i = 0; i < word.length; i++) {
@@ -30,66 +31,6 @@ function App() {
     }
     setUsedLetters(newMap)
   }
-  // *********************************************************
-  // SECTION FOR MODAL
-  // *********************************************************
-  const handleClose = () => {
-    setIsGameOver(false)
-  }
-
-  const actionBar = (
-    <div className='flex justify-evenly text-white font-clearSans'>
-      <button className='flex justify-center items-center px-3 py-2 rounded-full border min-w-[12rem] border-green-500 bg-green-500'>
-        Play again &#8635;
-      </button>
-      <button className='flex justify-center items-center px-3 py-2 rounded-full border min-w-[12rem] border-neutral-500 bg-neutral-500'>
-        Share
-        <svg
-          id='AuthCTA-module_shareIcon__WGE7Z'
-          xmlns='http://www.w3.org/2000/svg'
-          height='24'
-          viewBox='0 0 24 24'
-          width='24'
-          data-testid='icon-share'
-          className='pl-2'
-        >
-          <path
-            fill='white'
-            d='M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z'
-          ></path>
-        </svg>
-      </button>
-    </div>
-  )
-
-  const modal = (
-    <Modal onClose={handleClose} actionBar={actionBar}>
-      <h4 className='text-center'>STATISTICS</h4>
-      <div className='flex justify-evenly items-baseline'>
-        <div className='flex flex-col justify-center max-w-[3rem]'>
-          <h2 className='text-4xl'>16</h2>
-          <p className='font-clearSans'>Played</p>
-        </div>
-        <div className='flex flex-col justify-center max-w-[3rem]'>
-          <h2 className='text-4xl'>50</h2>
-          <p className='font-clearSans'>Win %</p>
-        </div>
-        <div className='flex flex-col justify-center max-w-[3rem]'>
-          <h2 className='text-4xl'>1</h2>
-          <p className='font-clearSans'>Current Streak</p>
-        </div>
-        <div className='flex flex-col justify-center max-w-[3rem]'>
-          <h2 className='text-4xl'>1</h2>
-          <p className='font-clearSans'>Max Streak</p>
-        </div>
-      </div>
-      <h3>GUESS DISTRIBUTION</h3>
-      <div>
-        I don't want to make a graph for a game no one is going to play :(
-        <br /> Have a graph showing my happiness versus hours without coffee
-      </div>
-    </Modal>
-  )
 
   // ****************************************************
   // STATE FOR APP
@@ -102,19 +43,67 @@ function App() {
   )
   const [answer, setAnswer] = useState(getRandomWord().toLowerCase())
   const [isGameOver, setIsGameOver] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   const boardRef = useRef()
+
+  console.log('answer:', answer)
 
   // ****************************************************
   // FUNCTIONS FOR APP
   // ****************************************************
   const dispatch = useNotification()
-  // when animation ends, check if guess was correct and set game state accordingly
-  const handleAnimationEnd = event => {
+
+  const handleGameRestart = () => {
+    setWordList(Array(6).fill(''))
+    setActive(0)
+    setRowState(RowState.None)
+    setStateMatrix(
+      Array.from({ length: 6 }, () => Array(5).fill(LetterState.Empty))
+    )
+    setAnswer(getRandomWord().toLowerCase())
+    setIsGameOver(false)
+    setUsedLetters(new Map())
+    setShowModal(false)
+  }
+
+  const handleCorrectGuess = () => {
+    switch (active - 1) {
+      case 0:
+        return dispatch({ message: '🔥💯🔥!' })
+      case 1:
+        return dispatch({ message: '🙌🙌🙌' })
+      case 2:
+        return dispatch({ message: '👌👌👌' })
+      case 3:
+        return dispatch({ message: '👍👍👍' })
+      case 4:
+        return dispatch({ message: '🙏🙏🙏' })
+      case 5:
+        return dispatch({ message: '😮‍💨😮‍💨😮‍💨' })
+    }
+  }
+  // after flip animation, check if guess was correct and set game state accordingly
+  const handleAnimationEnd = () => {
+    if (rowState === RowState.Correct) {
+      setTimeout(() => {
+        setShowModal(true)
+      }, 2000)
+      return
+    }
     if (stateMatrix[active - 1].every(el => el === LetterState.Match)) {
       setRowState(RowState.Correct)
+      setIsGameOver(true)
+      handleCorrectGuess()
+      return
     }
-    if (rowState === RowState.Correct) setIsGameOver(true)
+    if (active === 6) {
+      setIsGameOver(true)
+      dispatch({ message: answer })
+      setTimeout(() => {
+        setShowModal(true)
+      }, 2000)
+    }
   }
   // triggers animation to play again without changing state if the ref has been attached to an element
   const triggerAnimation = ref => {
@@ -171,8 +160,8 @@ function App() {
       if (i === active) return stateArray
       else return arr
     })
-    // check for game over, handle word submit, set state matrix, set active row, set row state (for animation purposes)
-    handleSubmittedWord(wordList[active].toLowerCase(), stateArray)
+    // set state matrix, set row state (for animation purposes), set active row
+    updateUsedLetters(wordList[active].toLowerCase(), stateArray)
     setStateMatrix(newStateMatrix)
     setRowState(RowState.Valid)
     setActive(active + 1)
@@ -193,21 +182,154 @@ function App() {
     if (event.key === 'Enter') handleEnter()
     else return
   }
+  const handleShare = () => {
+    navigator.clipboard.writeText('I won at fake wordle today!').then(
+      () => {
+        dispatch({ message: 'Copied results to clipboard! 🤓✅📝' })
+      },
+      () => {
+        dispatch({ message: 'Could not copy results to clipboard 😔❌📝' })
+      }
+    )
+  }
 
   // global keydown press event listener and handler
   useEffect(() => {
     if (!isGameOver) document.addEventListener('keydown', handleKeydown)
     return () => document.removeEventListener('keydown', handleKeydown)
-  }, [wordList, active])
+  }, [wordList, active, isGameOver])
+
+  // *********************************************************
+  // SECTION FOR MODAL
+  // *********************************************************
+  const handleClose = () => {
+    setShowModal(false)
+  }
+
+  const actionBar = (
+    <div className='flex justify-evenly gap-1 text-white font-clearSans'>
+      <button
+        onClick={handleGameRestart}
+        className='flex flex-initial justify-center items-center px-3 py-2 rounded-full border border-green-500 bg-green-500'
+      >
+        Play again &#8635;
+      </button>
+      <button
+        onClick={handleShare}
+        className='flex flex-initial justify-center items-center px-3 py-2 rounded-full border border-neutral-500 bg-neutral-500'
+      >
+        Share
+        <svg
+          id='AuthCTA-module_shareIcon__WGE7Z'
+          xmlns='http://www.w3.org/2000/svg'
+          height='24'
+          viewBox='0 0 24 24'
+          width='24'
+          data-testid='icon-share'
+          className='pl-2'
+        >
+          <path
+            fill='white'
+            d='M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z'
+          ></path>
+        </svg>
+      </button>
+    </div>
+  )
+
+  let speedToComplete = Math.random()
+  switch (true) {
+    case speedToComplete <= 0.33:
+      speedToComplete = 'Fast'
+      break
+    case speedToComplete > 0.33 && speedToComplete <= 0.66:
+      speedToComplete = 'Average'
+      break
+    case speedToComplete > 0.66:
+      speedToComplete = 'Slow'
+      break
+  }
+
+  const modal = (
+    <Modal onClose={handleClose} actionBar={actionBar}>
+      <h4 className='text-center'>STATISTICS</h4>
+      <div className='flex justify-center items-baseline gap-4'>
+        <div className='flex flex-col justify-center leading-4 max-w-[5rem]'>
+          <h2 className='text-4xl'>{Math.floor(Math.random() * 10)}</h2>
+          <p className='font-clearSans'>
+            Played <br />
+            (I think)
+          </p>
+        </div>
+        <div className='flex flex-col justify-center leading-4 max-w-[5rem]'>
+          <h2 className='text-4xl'>{Math.floor(Math.random() * 100)}</h2>
+          <p className='font-clearSans'>Win % (Rough estimate)</p>
+        </div>
+        <div className='flex flex-col justify-center leading-4 max-w-[5rem]'>
+          {/* <h2 className='text-4xl'>{Math.random() > 0.5 ? 'Fast' : 'Slow'}</h2> */}
+          <h2 className='text-4xl'>{speedToComplete}</h2>
+          <p className='font-clearSans'>Time*</p>
+        </div>
+        <div className='flex flex-col justify-center leading-4 max-w-[5rem]'>
+          <h2 className='text-4xl'></h2>
+          <p className='font-clearSans'></p>
+        </div>
+      </div>
+      <h3>GUESS DISTRIBUTION</h3>
+      <div>
+        I don't want to make a graph for a game no one is going to play 😔
+        <br /> Here's a graph showing my happiness versus hours without coffee
+        instead 🙂
+        <img
+          src={graph}
+          alt='graph showing decreasing happines as a function of time without coffee'
+        />
+      </div>
+      <p className='self-start text-sm'>
+        * Relative to control group of 10 year-olds 👶👶👶
+      </p>
+    </Modal>
+  )
 
   // ****************************************************
   // FINAL OUTPUT
   // ****************************************************
   return (
     <div className='h-[calc(100%-13rem)]'>
-      {/* {isGameOver && modal} */}
-      <header className='flex flex-col justify-center items-center h-16'>
-        <h3 className='font-karnak font-bold tracking-wide text-4xl'>Wordle</h3>
+      {showModal && modal}
+      <header className='flex justify-center items-center h-16 mx-4'>
+        <div
+          className='mr-auto cursor-pointer'
+          onClick={() =>
+            dispatch({
+              message:
+                'HUZZAH! THIS IS ONLY FOR STYLING PURPOSES! THERE IS NOTHING TO SEE HERE!',
+            })
+          }
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 448 512'
+            className='w-5 fill-neutral-100'
+          >
+            <path d='M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z' />
+          </svg>
+        </div>
+        <h3 className='font-karnak font-bold tracking-wide text-4xl text-center'>
+          Wordle
+        </h3>
+        <div
+          className='ml-auto cursor-pointer'
+          onClick={() => setShowModal(true)}
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 448 512'
+            className='w-8 fill-neutral-100'
+          >
+            <path d='M160 80c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V80zM0 272c0-26.5 21.5-48 48-48H80c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V272zM368 96h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H368c-26.5 0-48-21.5-48-48V144c0-26.5 21.5-48 48-48z' />
+          </svg>
+        </div>
       </header>
       <hr className='border-neutral-700' />
       <div className='h-[calc(100%-theme(spacing.16))] flex flex-col justify-evenly'>

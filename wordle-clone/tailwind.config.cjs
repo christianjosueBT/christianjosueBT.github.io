@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  // safelist: ['opacity-0'],
   theme: {
     extend: {
       fontFamily: {
