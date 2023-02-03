@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, FC } from 'react'
 import TileBoard from './components/TileBoard'
 import { RowState } from './components/TileRow'
 import KeyBoard from './components/KeyBoard'
@@ -18,7 +18,7 @@ function App() {
   // ************************************************************
   const [usedLetters, setUsedLetters] = useState(new Map())
   // updates usedLetters state to keep track of what letters have been used, and what is their correct LetterState
-  const updateUsedLetters = (word, stateArray) => {
+  const updateUsedLetters = (word: string, stateArray: LetterState[]) => {
     const newMap = new Map(usedLetters)
 
     for (let i = 0; i < word.length; i++) {
@@ -45,7 +45,7 @@ function App() {
   const [isGameOver, setIsGameOver] = useState(false)
   const [showModal, setShowModal] = useState(false)
 
-  const boardRef = useRef()
+  const boardRef = useRef<HTMLDivElement>(null)
 
   console.log('answer:', answer)
 
@@ -106,14 +106,14 @@ function App() {
     }
   }
   // triggers animation to play again without changing state if the ref has been attached to an element
-  const triggerAnimation = ref => {
+  const triggerAnimation = (ref: React.Ref<HTMLDivElement>) => {
     if (ref && 'current' in ref) {
       if (ref.current) {
         let s = ref.current
         s.style.animation = 'none'
         // I had to do "let x =" here because my create-react-app config was yelling at me
         let x = s.offsetHeight // trigger reflow
-        s.style.animation = null
+        s.style.animation = ''
       }
     }
   }
@@ -168,7 +168,7 @@ function App() {
 
     return
   }
-  const handleKeydown = (event: object) => {
+  const handleKeydown = (event: KeyboardEvent) => {
     // if pressed key is an alphabet character
     if (
       (event.keyCode >= 65 && event.keyCode <= 90) ||
@@ -237,15 +237,16 @@ function App() {
     </div>
   )
 
-  let speedToComplete = Math.random()
+  let speed = Math.random()
+  let speedToComplete = ''
   switch (true) {
-    case speedToComplete <= 0.33:
+    case speed <= 0.33:
       speedToComplete = 'Fast'
       break
-    case speedToComplete > 0.33 && speedToComplete <= 0.66:
+    case speed > 0.33 && speed <= 0.66:
       speedToComplete = 'Average'
       break
-    case speedToComplete > 0.66:
+    case speed > 0.66:
       speedToComplete = 'Slow'
       break
   }

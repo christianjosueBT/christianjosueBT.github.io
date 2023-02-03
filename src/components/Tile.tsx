@@ -4,10 +4,16 @@ import { LetterState } from '../utils/word-utils'
 interface TileProps {
   letter: string
   state: number
-  className: string
+  className?: string
+  onAnimationEnd?: Function
 }
 
-export default function Tile({ letter, state, onAnimationEnd, ...rest }) {
+export default function Tile({
+  letter,
+  state,
+  onAnimationEnd,
+  ...rest
+}: TileProps) {
   const classes = className(
     'w-16 h-16 border-solid border-2 border-neutral-700', // look and sizing
     'flex justify-center items-center', // flex stuff
@@ -22,7 +28,12 @@ export default function Tile({ letter, state, onAnimationEnd, ...rest }) {
   )
 
   return (
-    <div className={classes} onAnimationEnd={onAnimationEnd}>
+    <div
+      className={classes}
+      onAnimationEnd={() => {
+        if (onAnimationEnd) onAnimationEnd()
+      }}
+    >
       {letter.toUpperCase()}
     </div>
   )

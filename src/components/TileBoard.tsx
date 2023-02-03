@@ -1,7 +1,19 @@
 import { forwardRef } from 'react'
 import TileRow, { RowState } from './TileRow'
+import { LetterState } from '../utils/word-utils'
 
-const TileBoard = forwardRef(function TileBoard(props, ref) {
+interface TileBoardProps {
+  wordList: string[]
+  stateMatrix: LetterState[][]
+  active: number
+  rowState: RowState
+  onAnimationEnd: Function
+}
+
+const TileBoard = forwardRef(function TileBoard(
+  props: TileBoardProps,
+  ref: React.Ref<HTMLDivElement>
+) {
   const { wordList, stateMatrix, active, rowState, onAnimationEnd } = props
   // ****************************************************
   // FINAL OUTPUT

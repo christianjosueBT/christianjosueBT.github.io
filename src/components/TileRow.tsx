@@ -6,7 +6,8 @@ import { LetterState } from '../utils/word-utils'
 interface TileRowProps {
   word: string
   stateArray: LetterState[]
-  rowState: RowState
+  rowState?: RowState
+  onAnimationEnd?: Function
 }
 
 enum RowState {
@@ -16,7 +17,10 @@ enum RowState {
   Correct = 'correct',
 }
 
-const TileRow = forwardRef(function TileRow(props, ref) {
+const TileRow = forwardRef(function TileRow(
+  props: TileRowProps,
+  ref: React.Ref<HTMLDivElement>
+) {
   const { word, stateArray, rowState, onAnimationEnd }: TileRowProps = props
 
   const tileContent = Array.from(word)
