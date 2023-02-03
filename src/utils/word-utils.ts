@@ -11,6 +11,13 @@ enum LetterState {
   Match,
 }
 
+interface LetterCounter {
+  [key: string]: number
+}
+interface IgnoreNumber {
+  [key: number]: boolean
+}
+
 function getRandomWord() {
   return wordBank.valid[Math.floor(Math.random() * wordBank.valid.length)]
 }
@@ -19,8 +26,8 @@ const computeStateArray = (guess: string, answer: string): LetterState[] => {
   if (guess.length !== 5 || answer.length !== 5) return []
 
   const stateArray: LetterState[] = Array(5)
-  const answerLetterCount = {}
-  const ignore = {}
+  const answerLetterCount: LetterCounter = {}
+  const ignore: IgnoreNumber = {}
   let continueOuterLoop = false
 
   for (let i = 0; i < answer.length; i++) {
