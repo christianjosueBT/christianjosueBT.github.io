@@ -1,19 +1,28 @@
+import { MouseEventHandler } from 'react'
 import Key from './Key'
+
+interface KeyBoardProps {
+  usedLetters: Map<string, number>
+  addLetter: Function
+  deleteLetter: Function
+  handleEnter: MouseEventHandler<HTMLDivElement>
+}
 
 export default function KeyBoard({
   usedLetters,
   addLetter,
   deleteLetter,
   handleEnter,
-}) {
+}: KeyBoardProps) {
   const keysString1 = 'QWERTYUIOP',
     keysString2 = 'ASDFGHJKL',
     keysString3 = '↵ZXCVBNM←'
 
-  const renderedKeys = [[...keysString1], [...keysString2], [...keysString3]]
+  const keysToRender = [[...keysString1], [...keysString2], [...keysString3]]
+  const renderedKeys: React.ReactNode[] = []
 
-  for (let i = 0; i < renderedKeys.length; i++) {
-    renderedKeys[i] = renderedKeys[i].map(letter => {
+  for (let i = 0; i < keysToRender.length; i++) {
+    renderedKeys[i] = keysToRender[i].map(letter => {
       letter = letter.toLowerCase()
       if (letter === '↵')
         return (
@@ -24,7 +33,7 @@ export default function KeyBoard({
       // if key is backspace
       if (letter === '←')
         return (
-          <Key key={letter} handleClick={deleteLetter}>
+          <Key key={letter} handleClick={() => deleteLetter}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='48'

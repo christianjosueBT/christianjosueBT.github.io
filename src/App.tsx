@@ -52,7 +52,7 @@ function App() {
   // ****************************************************
   // FUNCTIONS FOR APP
   // ****************************************************
-  const dispatch = useNotification()
+  const showNotification = useNotification()
 
   const handleGameRestart = () => {
     setWordList(Array(6).fill(''))
@@ -70,17 +70,17 @@ function App() {
   const handleCorrectGuess = () => {
     switch (active - 1) {
       case 0:
-        return dispatch({ message: '🔥💯🔥!' })
+        return showNotification('🔥💯🔥!')
       case 1:
-        return dispatch({ message: '🙌🙌🙌' })
+        return showNotification('🙌🙌🙌')
       case 2:
-        return dispatch({ message: '👌👌👌' })
+        return showNotification('👌👌👌')
       case 3:
-        return dispatch({ message: '👍👍👍' })
+        return showNotification('👍👍👍')
       case 4:
-        return dispatch({ message: '🙏🙏🙏' })
+        return showNotification('🙏🙏🙏')
       case 5:
-        return dispatch({ message: '😮‍💨😮‍💨😮‍💨' })
+        return showNotification('😮‍💨😮‍💨😮‍💨')
     }
   }
   // after flip animation, check if guess was correct and set game state accordingly
@@ -99,7 +99,7 @@ function App() {
     }
     if (active === 6) {
       setIsGameOver(true)
-      dispatch({ message: answer })
+      showNotification(answer)
       setTimeout(() => {
         setShowModal(true)
       }, 2000)
@@ -144,14 +144,14 @@ function App() {
     if (wordList[active].length !== 5) {
       setRowState(state => RowState.Invalid)
       triggerAnimation(boardRef)
-      dispatch({ message: 'Not enough letters' })
+      showNotification('Not enough letters')
       return
     }
     // invalid word
     if (!words.has(wordList[active].toLowerCase())) {
       setRowState(state => RowState.Invalid)
       triggerAnimation(boardRef)
-      dispatch({ message: 'Not in word list' })
+      showNotification('Not in word list')
       return
     }
     // valid guess, compute state array for current row
@@ -185,10 +185,10 @@ function App() {
   const handleShare = () => {
     navigator.clipboard.writeText('I won at fake wordle today!').then(
       () => {
-        dispatch({ message: 'Copied results to clipboard! 🤓✅📝' })
+        showNotification('Copied results to clipboard! 🤓✅📝')
       },
       () => {
-        dispatch({ message: 'Could not copy results to clipboard 😔❌📝' })
+        showNotification('Could not copy results to clipboard 😔❌📝')
       }
     )
   }
@@ -302,10 +302,9 @@ function App() {
         <div
           className='mr-auto cursor-pointer'
           onClick={() =>
-            dispatch({
-              message:
-                'HUZZAH! THIS IS ONLY FOR STYLING PURPOSES! THERE IS NOTHING TO SEE HERE!',
-            })
+            showNotification(
+              'HUZZAH! THIS IS ONLY FOR STYLING PURPOSES! THERE IS NOTHING TO SEE HERE!'
+            )
           }
         >
           <svg

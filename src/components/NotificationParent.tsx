@@ -7,19 +7,37 @@ import React, {
 import { v4 } from 'uuid'
 import Notification from './Notification'
 
-const NotificationContext = createContext()
+interface NotificationProviderProps {
+  children?: React.ReactNode // best, accepts everything React can render
+}
 
-function NotificationProvider(props) {
-  const [state, dispatch] = useReducer((state, action) => {
-    switch (action.type) {
-      case 'ADD_NOTIFICATION':
-        return [{ ...action.payload }, ...state]
-      case 'REMOVE_NOTIFICATION':
-        return state.filter(el => el.id !== action.id)
-      default:
-        return state
-    }
-  }, [])
+interface state {
+  id: string
+  message: string
+}
+
+interface action {
+  type: string
+  payload: state
+}
+
+const NotificationContext = createContext<Function | null>(null)
+
+function NotificationProvider(props: NotificationProviderProps) {
+  const [state, dispatch] = useReducer(
+    (state: state[], action: action): state[] => {
+      console.log(state)
+      switch (action.type) {
+        case 'ADD_NOTIFICATION':
+          return [{ ...action.payload }, ...state]
+        case 'REMOVE_NOTIFICATION':
+          return state.filter(el => el.id !== action.payload.id)
+        default:
+          return state
+      }
+    },
+    []
+  )
 
   return (
     <NotificationContext.Provider value={dispatch}>
@@ -40,35 +58,16 @@ function NotificationProvider(props) {
 export const useNotification = () => {
   const dispatch = useContext(NotificationContext)
 
-  return props => {
-    dispatch({
-      type: 'ADD_NOTIFICATION',
-      payload: {
-        id: v4(),
-        ...props,
-      },
-    })
+  return (message: string) => {
+    if (dispatch)
+      dispatch({
+        type: 'ADD_NOTIFICATION',
+        payload: {
+          id: v4(),
+          message,
+        },
+      })
   }
 }
-
-// props => {
-//   dispatch({
-//     type: 'ADD_NOTIFICATION',
-//     payload: {
-//       id: v4(),
-//       message: inputVal,
-//     },
-//   })
-// }
-
-// dispatch(props) {
-//   dispatch({
-//     type: 'ADD_NOTIFICATION',
-//     payload: {
-//       id: v4(),
-//       ...props,
-//     },
-//   })
-// }
 
 export default NotificationProvider

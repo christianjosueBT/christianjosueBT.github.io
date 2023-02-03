@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 
-function Notification({ dispatch, id, children }) {
+interface NotificationProps {
+  dispatch: Function
+  id: string
+  children?: React.ReactNode
+}
+
+function Notification({ dispatch, id, children }: NotificationProps) {
   const [opacity, setOpacity] = useState(true)
 
   useEffect(() => {
@@ -12,7 +18,7 @@ function Notification({ dispatch, id, children }) {
     setTimeout(function () {
       dispatch({
         type: 'REMOVE_NOTIFICATION',
-        id,
+        payload: { id },
       })
     }, 2300)
   }, [])
