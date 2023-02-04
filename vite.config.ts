@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/worldle-clone/',
   plugins: [
     react({
       include: ['**/*.tsx', '**/**/*.tsx'],
@@ -16,5 +17,4 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
   },
-  base: '/worldle-clone/',
 })
